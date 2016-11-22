@@ -23,7 +23,7 @@ describe('User endpoints', function() {
     });
 
     describe('/users', function() {
-        describe('GET', function() {
+        xdescribe('GET', function() {
             it('should return an empty list of users initially', function() {
                 // Get the list of users
                 return chai.request(app)
@@ -67,7 +67,7 @@ describe('User endpoints', function() {
             });
         });
         describe('POST', function() {
-            it('should allow adding a user', function() {
+            it.only('should allow adding a user', function() {
                 var user = {
                     username: 'joe'
                 };
