@@ -9,6 +9,16 @@ var User = require('./models/user');
 app.use(bodyParser.json());
 
 // Add your API endpoints here
+// 
+app.get('/users/:id', function(req, res) {
+    User.findOne({_id: req.params.id}, function(err, user) {
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+        res.status(200).json(user);
+    }) 
+})
+
 app.get('/users', function(req, res) {
     User.find(function(err, users) {
         if (err) {
@@ -34,11 +44,6 @@ app.post('/users', function(req, res) {
 })
 
 app.put('/users/:id', function(req, res) {
-    // Find a user from the database using ID.
-    //  -> We find a user
-    //     -> update the user
-    //  -> We don't find a user
-    //      -> create a new user
 
     User.find({_id: req.params.id}, function(err, result){
 
@@ -47,7 +52,6 @@ app.put('/users/:id', function(req, res) {
                 return res.status(200).json({});
             });
         } else {
-            console.log("found");
             User.findOneAndUpdate(
                 {_id: req.params.id},
                 {$set: {username: req.body.username}},
@@ -61,6 +65,15 @@ app.put('/users/:id', function(req, res) {
         }
     })
 });
+
+app.delete('/users/:id', function(req, res) {
+    User.findOneAndRemove({_id: req.params.id}, function(err, user) {
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+        res.status(200).json({});
+    })
+})
 
 var runServer = function(callback) {
     var databaseUri = process.env.DATABASE_URI || global.databaseUri || 'mongodb://localhost/sup';
