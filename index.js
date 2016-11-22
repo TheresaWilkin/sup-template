@@ -7,6 +7,7 @@ var app = express();
 var jsonParser = bodyParser.json();
 
 // Add your API endpoints here
+// testing git
 
 var runServer = function(callback) {
     var databaseUri = process.env.DATABASE_URI || global.databaseUri || 'mongodb://localhost/sup';
