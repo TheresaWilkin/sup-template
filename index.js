@@ -93,6 +93,7 @@ app.get('/messages', function(req, res) {
 });
 
 app.post('/messages', function(req, res) {
+  // move to models
   if (!req.body.text) {
     return res.status(422).json({
       message: 'Missing field: text'
@@ -119,29 +120,39 @@ app.post('/messages', function(req, res) {
     });
   }
 
+
   var firstPromise = User.findOne({_id: req.body.from});
   var secondPromise = User.findOne({_id: req.body.to});
 
   Promise.all([firstPromise, secondPromise]).then(function(result) {
     if (!result[1]) {
-        res.status(422).json({message: "Incorrect field value: to"});
+      res.status(422).json({message: "Incorrect field value: to"});
     } else if (result[0] === null) {
-        res.status(422).json({message: "Incorrect field value: from"});
+      res.status(422).json({message: "Incorrect field value: from"});
+    } else {
+      var message = new Message(req.body);
+      return message;
     }
-    else {
-    Message.create(req.body, function(err, message) {
-    if (err) {
-      return res.status(500).json({
-        message: 'Server error.'
-      });
-    }
-    res.location('/messages/' + message._id).status(201).json({});
-
+  }).then(function(message) {
+    message.save(message, function(err, message) {
+      if (err) {
+        res.send(500).json({});
+      }
+      res.location('/messages/' + message._id).status(201).json({});
   }).catch(function() {
     res.status(500).send({message:"Internal error"});
+    });
   });
-}
-  });
+
+  // Message.create(req.body, function(err, message) {
+  //   if (err) {
+  //   return res.status(500).json({
+  //     message: 'Server error.'
+  //   });
+  //   }
+  // res.location('/messages/' + message._id).status(201).json({});
+  //
+  // })
 
 // Message.create(req.body, function(err, message) {
 //     if (err) {
