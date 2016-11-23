@@ -14,7 +14,7 @@ var should = chai.should();
 
 chai.use(chaiHttp);
 
-describe('User endpoints', function() {
+xdescribe('User endpoints', function() {
     beforeEach(function(done) {
         // Clear the database
         mongoose.connection.db.dropDatabase(done);

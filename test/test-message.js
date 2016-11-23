@@ -342,7 +342,7 @@ describe('Message endpoints', function() {
                 }.bind(this));
             });
         });
-        describe.only('POST', function() {
+        describe('POST', function() {
             it('should allow adding a message', function() {
                 var message = {
                     from: this.alice._id,
