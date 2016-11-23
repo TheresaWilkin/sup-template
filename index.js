@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var app = express();
 
 var User = require('./models/user');
+var Message = require('./models/message');
 
 app.use(bodyParser.json());
 
@@ -46,6 +47,12 @@ app.post('/users', function(req, res) {
 app.put('/users/:id', function(req, res) {
 
     User.find({_id: req.params.id}, function(err, result){
+        if (!req.body.username) {
+            return res.status(422).json({message: 'Missing field: username'});
+        }
+        if (typeof req.body.username !== 'string') {
+            return res.status(422).json({message: 'Incorrect field type: username'});
+        }
 
         if (result.length === 0) {
             User.create({username: req.body.username, _id: req.params.id}, function(err, user) {
@@ -73,6 +80,16 @@ app.delete('/users/:id', function(req, res) {
         }
         res.status(200).json({});
     })
+})
+
+app.get('/messages', function(req, res) {
+    Message.find(req.query)
+            .populate('from')
+            .populate('to')
+            .then(function(messages) {
+ //               console.log(messages);
+                res.json(messages);
+            })
 })
 
 var runServer = function(callback) {
