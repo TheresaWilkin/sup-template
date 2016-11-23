@@ -10,14 +10,14 @@ var Message = require('./models/message');
 app.use(bodyParser.json());
 
 // Add your API endpoints here
-// 
+//
 app.get('/users/:id', function(req, res) {
     User.findOne({_id: req.params.id}, function(err, user) {
         if (!user) {
             return res.status(404).json({message: 'User not found'});
         }
         res.status(200).json(user);
-    }) 
+    })
 })
 
 app.get('/users', function(req, res) {
@@ -40,7 +40,7 @@ app.post('/users', function(req, res) {
         if (err) {
             res.sendStatus(500);
         }
-    res.location('/users/' + user._id).status(201).json({}) 
+    res.location('/users/' + user._id).status(201).json({})
     })
 })
 
@@ -89,8 +89,46 @@ app.get('/messages', function(req, res) {
             .then(function(messages) {
  //               console.log(messages);
                 res.json(messages);
-            })
-})
+            });
+});
+
+app.post('/messages', function(req, res) {
+  var input = req.body;
+  if (!req.body.text) {
+    return res.status(422).json({
+      message: 'Missing field: text'
+    });
+  }
+  if (!isNaN(req.body.text)) {
+    return res.status(422).json({
+      message: 'Incorrect field type: text'
+    });
+  }
+  if (!isNaN(req.body.to)) {
+    return res.status(422).json({
+      message: 'Incorrect field type: to'
+    });
+  }
+  if (!isNaN(req.body.from)) {
+    return res.status(422).json({
+      message: 'Incorrect field type: from'
+    });
+  }
+  if (!req.body.from) {
+    return res.status(422).json({
+      message: 'Incorrect field type: from'
+    });
+  }
+  Message.create(input, function(err, message) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Server error.'
+      });
+    }
+    console.log(message);
+    res.location('/messages/' + message._id).status(201).json({});
+  });
+});
 
 var runServer = function(callback) {
     var databaseUri = process.env.DATABASE_URI || global.databaseUri || 'mongodb://localhost/sup';
@@ -111,4 +149,3 @@ if (require.main === module) {
 
 exports.app = app;
 exports.runServer = runServer;
-
